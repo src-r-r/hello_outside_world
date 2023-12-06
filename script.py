@@ -204,7 +204,7 @@ def normalize_links_and_add_footer(
     for url, fs in footer_summaries.items():
         title = fs.user_description or fs.title
         quoted_summary = "\n".join([f"> {s}" for s in fs.summary.split("\n")])
-        out_message = out_message + f"\n\n[{title}]\n{quoted_summary}"
+        out_message = out_message + f"\n\n> # {title}\n{quoted_summary}"
 
     return out_message
 
@@ -234,7 +234,6 @@ def input_modifier(string, state, is_chat=False):
     In chat mode, it is the same as chat_input_modifier but only applied
     to "text", here called "string", and not to "visible_text".
     """
-    print(f"state: {state}")
     return string
     if params["use_for"] not in ("Both", "Notebook &amp; Default"):
         return string
@@ -278,7 +277,7 @@ def ui():
     To learn about gradio components, check out the docs:
     https://gradio.app/docs/
     """
-    with gr.Accordion(label="🌎 Hello, Outside World", css_class="hello-outside-world"):
+    with gr.Accordion(label="🌎 Hello, Outside World!", css_class="hello-outside-world"):
         summary_length_trigger = gr.Number(
             label="When page content is under this length, the content will not be summarized.",
             value=params["summary_length_trigger"],
