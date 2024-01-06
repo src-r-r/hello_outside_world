@@ -57,7 +57,7 @@ PARAMS_PATH = TEXTGEN_ROOT / "hello_outside_world_settings.json"
 USE_FOR_CHOICES = ["Chats", "Notebook &amp; Default", "Both"]
 
 # markdown URLs.
-RX_MD_URLS = re.compile(r"(?P<description>[^()]+)\((?P<url>[^)]+)\)").findall
+RX_MD_URLS = re.compile(r"(?P<description>[^()]+)\((?P<url>[^)]+)\)").finditer
 
 # Not relaly RFC 3986, but who's counting?
 RX_RFC_3986 = re.compile(
@@ -168,12 +168,16 @@ def normalize_links_and_add_footer(
     footer_summaries = {}
     out_message = input_message
     for match in RX_MD_URLS(input_message):
-        url = match.group(url)
+        groups = match.groupdict()
+        url = groups["url"]
+        if url not in summaries:
+            # This was probably a false positive.
+            continue
         if summaries[url] == FETCH_ERROR:
             continue
         footer_summaries[url] = OutputFooter(
             url=url,
-            user_description=match.group("description"),
+            user_description=groups["description"],
             title=summaries[url].article.title,
             summary=summaries[url].article.summary
             if summaries[url].is_summary
